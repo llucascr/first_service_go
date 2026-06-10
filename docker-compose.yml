@@ -1,15 +1,17 @@
 services:
-  couchdb:
-    image: couchdb:3
-    container_name: couchdb
-    restart: unless-stopped
-    ports:
-      - "5984:5984"
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres_db
+    restart: always
     environment:
-      COUCHDB_USER: admin
-      COUCHDB_PASSWORD: pass
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: first_service_go
+    ports:
+      - "5432:5432"
     volumes:
-      - couchdb_data:/opt/couchdb/data
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
-  couchdb_data:
+  pgdata:
+
