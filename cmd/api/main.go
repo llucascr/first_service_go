@@ -1,14 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
-	kivik "github.com/go-kivik/kivik/v4"
-	_ "github.com/go-kivik/kivik/v4/couchdb" // The CouchDB driver
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
+
 	"github.com/llucascr/first_service_go/handler"
 	"github.com/llucascr/first_service_go/middleware"
+	"github.com/llucascr/first_service_go/config"
 	"github.com/llucascr/first_service_go/repository"
 	"github.com/llucascr/first_service_go/service"
 )
@@ -16,27 +20,34 @@ import (
 func main() {
 	log.Println("creating a webserver")
 
-	client, err := kivik.New("couch", "http://admin:pass@localhost:5984/")
+	err := godotenv.Load("../../.env")
 	if err != nil {
-		log.Fatalf("Failed to create client: %s", err)
+		log.Fatal("Error loading .env file")
 	}
 
-	db := client.DB("notebooks")
-	if err := db.Err(); err != nil {
-		log.Fatalf("Failed to connect to database: %s", err)
+	connStr := os.Getenv("DATABASE_URL")
+	db, err := config.NewPostgresDB(connStr)
+	if err != nil {
+		panic(err)
 	}
 
-	repo := repository.NewRepository(db)
-	srv := service.NewService(repo)
-	handler := handler.New(srv)
-	
+	fmt.Println("Connection to PostgreSQL successfully established!")
+
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
+	fmt.Println(userService)
+
+	notebookRepository := repository.NewNotebookRepository(db)
+	notebookService := service.NewNotebookService(notebookRepository)
+	notebookHandler := handler.NewNotebookHandler(notebookService)
+
 	router := mux.NewRouter()
+	router.HandleFunc("/health", handler.Health).Methods("GET")
 
-	handler.MountHandler(router)
-
+	notebookHandler.MountNotebookHandler(router)
 	loggedRouter := middleware.LoggingMiddleware(router)
 
-	log.Println("starting server on :8080")
+	log.Println("Starting server on :8080")
 	log.Fatal(http.ListenAndServe(":8080", loggedRouter))
 
 }

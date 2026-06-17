@@ -10,6 +10,7 @@ CREATE TABLE users (
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    deleted_at TIMESTAMP,
 );
 
 CREATE TABLE notebooks (
@@ -92,4 +93,13 @@ docker exec postgres_db psql -U admin -d first_service_go -tAc "SELECT 1 FROM pg
 # Rodar a Migration dentro do container Docker
 ```bash
 docker-compose exec -T postgres psql -U admin -d first_service_go < ./migrations/00001-create-tables.up.sql
+```
+
+# Rodar os testes da camada de Service
+```bash
+go test -v service/*.go 
+```
+
+```bash
+bash test_services.sh
 ```

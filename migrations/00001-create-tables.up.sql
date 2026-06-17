@@ -4,7 +4,8 @@ CREATE TABLE users (
     email       VARCHAR(300) NOT NULL,
     phone       VARCHAR(20),
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
 );
 
 CREATE TABLE tags (
