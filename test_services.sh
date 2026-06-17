@@ -1,0 +1,1 @@
+go test -json -v service/*.go 2>&1 | tee /tmp/gotest.log | gotestfmt
