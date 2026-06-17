@@ -1,0 +1,8 @@
+.git
+.gitignore
+.github
+.env
+*.md
+docker-compose.yml
+test_services.sh
+.DS_Store
