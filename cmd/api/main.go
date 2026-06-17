@@ -20,9 +20,8 @@ import (
 func main() {
 	log.Println("creating a webserver")
 
-	err := godotenv.Load("../../.env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	if err := godotenv.Load("../../.env"); err != nil {
+		log.Println("No .env file found, using environment variables")
 	}
 
 	connStr := os.Getenv("DATABASE_URL")
