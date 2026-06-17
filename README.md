@@ -103,3 +103,6 @@ go test -v service/*.go
 ```bash
 bash test_services.sh
 ```
+
+# Snyk job de seguraça
+[https://snyk.io/pt-BR/](https://snyk.io/pt-BR/)
