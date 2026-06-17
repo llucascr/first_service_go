@@ -20,6 +20,7 @@ import (
 	"github.com/llucascr/first_service_go/service"
 )
 
+
 func createUser(db *sql.DB, id uuid.UUID, name, email, phone string) error {
 	query := `INSERT INTO users (user_id, name, email, phone, created_at) VALUES ($1, $2, $3, $4, $5)`
 	_, err := db.Exec(query, id, name, email, phone, time.Now())
@@ -29,7 +30,7 @@ func createUser(db *sql.DB, id uuid.UUID, name, email, phone string) error {
 	return nil
 }
 
-func build() (*service.NoteBookService, uuid.UUID) {
+func buildNotebookService() (*service.NoteBookService, uuid.UUID) {
 	log.Println("creating a webserver")
 
 	err := godotenv.Load("../.env")
@@ -57,7 +58,7 @@ func build() (*service.NoteBookService, uuid.UUID) {
 }
 
 func TestNotebookService(t *testing.T) {
-	notebookSrv, userID := build()
+	notebookSrv, userID := buildNotebookService()
 	if notebookSrv == nil {
 		t.Error("The Service was not created")
 	}

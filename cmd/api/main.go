@@ -41,10 +41,15 @@ func main() {
 	notebookService := service.NewNotebookService(notebookRepository)
 	notebookHandler := handler.NewNotebookHandler(notebookService)
 
+	tagRepository := repository.NewTagRepository(db)
+	tagService := service.NewTagService(tagRepository)
+	tagHandler := handler.NewTagHandler(tagService)
+
 	router := mux.NewRouter()
 	router.HandleFunc("/health", handler.Health).Methods("GET")
 
 	notebookHandler.MountNotebookHandler(router)
+	tagHandler.MountTagHandler(router)
 	loggedRouter := middleware.LoggingMiddleware(router)
 
 	log.Println("Starting server on :8080")
