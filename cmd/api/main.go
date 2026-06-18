@@ -52,6 +52,10 @@ func main() {
 	nodesContentService := service.NewNodesContentService(nodesContentRepository)
 	nodesContentHandler := handler.NewNodesContentHandler(nodesContentService)
 
+	metaTagContentRepository := repository.NewMetaTagContentRepository(db)
+	metaTagContentService := service.NewMetaTagContentService(metaTagContentRepository)
+	metaTagContentHandler := handler.NewMetaTagContentHandler(metaTagContentService)
+
 	router := mux.NewRouter()
 	router.HandleFunc("/health", handler.Health).Methods("GET")
 
@@ -59,6 +63,7 @@ func main() {
 	tagHandler.MountTagHandler(router)
 	metaContentHandler.MountMetaContentHandler(router)
 	nodesContentHandler.MountNodesContentHandler(router)
+	metaTagContentHandler.MountMetaTagContentHandler(router)
 	loggedRouter := middleware.LoggingMiddleware(router)
 
 	log.Println("Starting server on :8080")
