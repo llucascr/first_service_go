@@ -42,7 +42,7 @@ CREATE TABLE meta_contents (
 );
 
 CREATE TABLE nodes_contents (
-    node_id      UUID,
+    node_id      UUID PRIMARY KEY,
     content_id   UUID REFERENCES meta_contents(content_id),
     user_id      UUID NOT NULL REFERENCES users(user_id),
     notebook_id  UUID NOT NULL REFERENCES notebooks(notebook_id),
