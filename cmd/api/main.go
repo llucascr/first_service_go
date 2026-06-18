@@ -10,9 +10,9 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
+	"github.com/llucascr/first_service_go/config"
 	"github.com/llucascr/first_service_go/handler"
 	"github.com/llucascr/first_service_go/middleware"
-	"github.com/llucascr/first_service_go/config"
 	"github.com/llucascr/first_service_go/repository"
 	"github.com/llucascr/first_service_go/service"
 )
@@ -36,34 +36,8 @@ func main() {
 	userService := service.NewUserService(userRepository)
 	fmt.Println(userService)
 
-	notebookRepository := repository.NewNotebookRepository(db)
-	notebookService := service.NewNotebookService(notebookRepository)
-	notebookHandler := handler.NewNotebookHandler(notebookService)
-
-	tagRepository := repository.NewTagRepository(db)
-	tagService := service.NewTagService(tagRepository)
-	tagHandler := handler.NewTagHandler(tagService)
-
-	metaContentRepository := repository.NewMetaContentRepository(db)
-	metaContentService := service.NewMetaContentService(metaContentRepository)
-	metaContentHandler := handler.NewMetaContentHandler(metaContentService)
-
-	nodesContentRepository := repository.NewNodesContentRepository(db)
-	nodesContentService := service.NewNodesContentService(nodesContentRepository)
-	nodesContentHandler := handler.NewNodesContentHandler(nodesContentService)
-
-	metaTagContentRepository := repository.NewMetaTagContentRepository(db)
-	metaTagContentService := service.NewMetaTagContentService(metaTagContentRepository)
-	metaTagContentHandler := handler.NewMetaTagContentHandler(metaTagContentService)
-
 	router := mux.NewRouter()
-	router.HandleFunc("/health", handler.Health).Methods("GET")
-
-	notebookHandler.MountNotebookHandler(router)
-	tagHandler.MountTagHandler(router)
-	metaContentHandler.MountMetaContentHandler(router)
-	nodesContentHandler.MountNodesContentHandler(router)
-	metaTagContentHandler.MountMetaTagContentHandler(router)
+	handler.MountHandler(router, db)
 	loggedRouter := middleware.LoggingMiddleware(router)
 
 	log.Println("Starting server on :8080")

@@ -21,15 +21,15 @@ func NewTagHandler(srv *service.TagService) *TagHandler {
 	}
 }
 
-func (h *TagHandler) MountTagHandler(r *mux.Router) {
-	r.HandleFunc("/tag", h.CreateTag).Methods(http.MethodPost)
-	r.HandleFunc("/tag/list", h.ListTagFromUser).Methods(http.MethodGet)
-	r.HandleFunc("/tag", h.GetTagByID).Methods(http.MethodGet)
-	r.HandleFunc("/tag", h.UpdateTag).Methods(http.MethodPut)
-	r.HandleFunc("/tag", h.DeleteTag).Methods(http.MethodDelete)
+func (h *TagHandler) mountHandler(r *mux.Router) {
+	r.HandleFunc("/tag", h.createTag).Methods(http.MethodPost)
+	r.HandleFunc("/tag/list", h.listTagFromUser).Methods(http.MethodGet)
+	r.HandleFunc("/tag", h.getTagByID).Methods(http.MethodGet)
+	r.HandleFunc("/tag", h.updateTag).Methods(http.MethodPut)
+	r.HandleFunc("/tag", h.deleteTag).Methods(http.MethodDelete)
 }
 
-func (h *TagHandler) CreateTag(w http.ResponseWriter, r *http.Request) {
+func (h *TagHandler) createTag(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -60,7 +60,7 @@ func (h *TagHandler) CreateTag(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *TagHandler) ListTagFromUser(w http.ResponseWriter, r *http.Request) {
+func (h *TagHandler) listTagFromUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -87,7 +87,7 @@ func (h *TagHandler) ListTagFromUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *TagHandler) GetTagByID(w http.ResponseWriter, r *http.Request) {
+func (h *TagHandler) getTagByID(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -111,7 +111,7 @@ func (h *TagHandler) GetTagByID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *TagHandler) UpdateTag(w http.ResponseWriter, r *http.Request) {
+func (h *TagHandler) updateTag(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -148,7 +148,7 @@ func (h *TagHandler) UpdateTag(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *TagHandler) DeleteTag(w http.ResponseWriter, r *http.Request) {
+func (h *TagHandler) deleteTag(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 

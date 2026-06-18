@@ -21,15 +21,15 @@ func NewNotebookHandler(srv *service.NoteBookService) *NotebookHandler {
 	}
 }
 
-func (h *NotebookHandler) MountNotebookHandler(r *mux.Router) {
-	r.HandleFunc("/notebook", h.CreateNotebook).Methods(http.MethodPost)
-	r.HandleFunc("/notebook/list", h.ListNotebookFromUser).Methods(http.MethodGet)
-	r.HandleFunc("/notebook", h.GetNotebookByID).Methods(http.MethodGet)
-	r.HandleFunc("/notebook", h.UpdateNotebook).Methods(http.MethodPut)
-	r.HandleFunc("/notebook", h.DeleteNotebook).Methods(http.MethodDelete)
+func (h *NotebookHandler) mountHandler(r *mux.Router) {
+	r.HandleFunc("/notebook", h.createNotebook).Methods(http.MethodPost)
+	r.HandleFunc("/notebook/list", h.listNotebookFromUser).Methods(http.MethodGet)
+	r.HandleFunc("/notebook", h.getNotebookByID).Methods(http.MethodGet)
+	r.HandleFunc("/notebook", h.updateNotebook).Methods(http.MethodPut)
+	r.HandleFunc("/notebook", h.deleteNotebook).Methods(http.MethodDelete)
 }
 
-func (h *NotebookHandler) CreateNotebook(w http.ResponseWriter, r *http.Request) {
+func (h *NotebookHandler) createNotebook(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -60,7 +60,7 @@ func (h *NotebookHandler) CreateNotebook(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func (h *NotebookHandler) ListNotebookFromUser(w http.ResponseWriter, r *http.Request) {
+func (h *NotebookHandler) listNotebookFromUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -88,7 +88,7 @@ func (h *NotebookHandler) ListNotebookFromUser(w http.ResponseWriter, r *http.Re
 	}
 }
 
-func (h *NotebookHandler) GetNotebookByID(w http.ResponseWriter, r *http.Request) {
+func (h *NotebookHandler) getNotebookByID(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -106,14 +106,13 @@ func (h *NotebookHandler) GetNotebookByID(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-
 	if err := json.NewEncoder(w).Encode(notebook_found); err != nil {
 		http.Error(w, "Falha ao codificar resposta: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
-func (h *NotebookHandler) UpdateNotebook(w http.ResponseWriter, r *http.Request) {
+func (h *NotebookHandler) updateNotebook(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -146,7 +145,7 @@ func (h *NotebookHandler) UpdateNotebook(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func (h *NotebookHandler) DeleteNotebook(w http.ResponseWriter, r *http.Request) {
+func (h *NotebookHandler) deleteNotebook(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 

@@ -21,16 +21,16 @@ func NewNodesContentHandler(srv *service.NodesContentService) *NodesContentHandl
 	}
 }
 
-func (h *NodesContentHandler) MountNodesContentHandler(r *mux.Router) {
-	r.HandleFunc("/nodescontent", h.CreateNodesContent).Methods(http.MethodPost)
-	r.HandleFunc("/nodescontent/list/notebook", h.ListNodesContentFromNotebook).Methods(http.MethodGet)
-	r.HandleFunc("/nodescontent/list/content", h.ListNodesContentFromContent).Methods(http.MethodGet)
-	r.HandleFunc("/nodescontent", h.GetNodesContentByID).Methods(http.MethodGet)
-	r.HandleFunc("/nodescontent", h.UpdateNodesContent).Methods(http.MethodPut)
-	r.HandleFunc("/nodescontent", h.DeleteNodesContent).Methods(http.MethodDelete)
+func (h *NodesContentHandler) mountHandler(r *mux.Router) {
+	r.HandleFunc("/nodescontent", h.createNodesContent).Methods(http.MethodPost)
+	r.HandleFunc("/nodescontent/list/notebook", h.listNodesContentFromNotebook).Methods(http.MethodGet)
+	r.HandleFunc("/nodescontent/list/content", h.listNodesContentFromContent).Methods(http.MethodGet)
+	r.HandleFunc("/nodescontent", h.getNodesContentByID).Methods(http.MethodGet)
+	r.HandleFunc("/nodescontent", h.updateNodesContent).Methods(http.MethodPut)
+	r.HandleFunc("/nodescontent", h.deleteNodesContent).Methods(http.MethodDelete)
 }
 
-func (h *NodesContentHandler) CreateNodesContent(w http.ResponseWriter, r *http.Request) {
+func (h *NodesContentHandler) createNodesContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -71,7 +71,7 @@ func (h *NodesContentHandler) CreateNodesContent(w http.ResponseWriter, r *http.
 	}
 }
 
-func (h *NodesContentHandler) ListNodesContentFromNotebook(w http.ResponseWriter, r *http.Request) {
+func (h *NodesContentHandler) listNodesContentFromNotebook(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -98,7 +98,7 @@ func (h *NodesContentHandler) ListNodesContentFromNotebook(w http.ResponseWriter
 	}
 }
 
-func (h *NodesContentHandler) ListNodesContentFromContent(w http.ResponseWriter, r *http.Request) {
+func (h *NodesContentHandler) listNodesContentFromContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -125,7 +125,7 @@ func (h *NodesContentHandler) ListNodesContentFromContent(w http.ResponseWriter,
 	}
 }
 
-func (h *NodesContentHandler) GetNodesContentByID(w http.ResponseWriter, r *http.Request) {
+func (h *NodesContentHandler) getNodesContentByID(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -149,7 +149,7 @@ func (h *NodesContentHandler) GetNodesContentByID(w http.ResponseWriter, r *http
 	}
 }
 
-func (h *NodesContentHandler) UpdateNodesContent(w http.ResponseWriter, r *http.Request) {
+func (h *NodesContentHandler) updateNodesContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -182,7 +182,7 @@ func (h *NodesContentHandler) UpdateNodesContent(w http.ResponseWriter, r *http.
 	}
 }
 
-func (h *NodesContentHandler) DeleteNodesContent(w http.ResponseWriter, r *http.Request) {
+func (h *NodesContentHandler) deleteNodesContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 

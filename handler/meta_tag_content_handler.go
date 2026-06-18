@@ -21,17 +21,17 @@ func NewMetaTagContentHandler(srv *service.MetaTagContentService) *MetaTagConten
 	}
 }
 
-func (h *MetaTagContentHandler) MountMetaTagContentHandler(r *mux.Router) {
-	r.HandleFunc("/metatagcontent", h.CreateMetaTagContent).Methods(http.MethodPost)
-	r.HandleFunc("/metatagcontent/list/content", h.ListMetaTagContentFromContent).Methods(http.MethodGet)
-	r.HandleFunc("/metatagcontent/list/tag", h.ListMetaTagContentFromTag).Methods(http.MethodGet)
-	r.HandleFunc("/metatagcontent/list/notebook", h.ListMetaTagContentFromNotebook).Methods(http.MethodGet)
-	r.HandleFunc("/metatagcontent", h.GetMetaTagContent).Methods(http.MethodGet)
-	r.HandleFunc("/metatagcontent", h.UpdateMetaTagContent).Methods(http.MethodPut)
-	r.HandleFunc("/metatagcontent", h.DeleteMetaTagContent).Methods(http.MethodDelete)
+func (h *MetaTagContentHandler) mountHandler(r *mux.Router) {
+	r.HandleFunc("/metatagcontent", h.createMetaTagContent).Methods(http.MethodPost)
+	r.HandleFunc("/metatagcontent/list/content", h.listMetaTagContentFromContent).Methods(http.MethodGet)
+	r.HandleFunc("/metatagcontent/list/tag", h.listMetaTagContentFromTag).Methods(http.MethodGet)
+	r.HandleFunc("/metatagcontent/list/notebook", h.listMetaTagContentFromNotebook).Methods(http.MethodGet)
+	r.HandleFunc("/metatagcontent", h.getMetaTagContent).Methods(http.MethodGet)
+	r.HandleFunc("/metatagcontent", h.updateMetaTagContent).Methods(http.MethodPut)
+	r.HandleFunc("/metatagcontent", h.deleteMetaTagContent).Methods(http.MethodDelete)
 }
 
-func (h *MetaTagContentHandler) CreateMetaTagContent(w http.ResponseWriter, r *http.Request) {
+func (h *MetaTagContentHandler) createMetaTagContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -79,7 +79,7 @@ func (h *MetaTagContentHandler) CreateMetaTagContent(w http.ResponseWriter, r *h
 	}
 }
 
-func (h *MetaTagContentHandler) ListMetaTagContentFromContent(w http.ResponseWriter, r *http.Request) {
+func (h *MetaTagContentHandler) listMetaTagContentFromContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -106,7 +106,7 @@ func (h *MetaTagContentHandler) ListMetaTagContentFromContent(w http.ResponseWri
 	}
 }
 
-func (h *MetaTagContentHandler) ListMetaTagContentFromTag(w http.ResponseWriter, r *http.Request) {
+func (h *MetaTagContentHandler) listMetaTagContentFromTag(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -133,7 +133,7 @@ func (h *MetaTagContentHandler) ListMetaTagContentFromTag(w http.ResponseWriter,
 	}
 }
 
-func (h *MetaTagContentHandler) ListMetaTagContentFromNotebook(w http.ResponseWriter, r *http.Request) {
+func (h *MetaTagContentHandler) listMetaTagContentFromNotebook(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -160,7 +160,7 @@ func (h *MetaTagContentHandler) ListMetaTagContentFromNotebook(w http.ResponseWr
 	}
 }
 
-func (h *MetaTagContentHandler) GetMetaTagContent(w http.ResponseWriter, r *http.Request) {
+func (h *MetaTagContentHandler) getMetaTagContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -190,7 +190,7 @@ func (h *MetaTagContentHandler) GetMetaTagContent(w http.ResponseWriter, r *http
 	}
 }
 
-func (h *MetaTagContentHandler) UpdateMetaTagContent(w http.ResponseWriter, r *http.Request) {
+func (h *MetaTagContentHandler) updateMetaTagContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -229,7 +229,7 @@ func (h *MetaTagContentHandler) UpdateMetaTagContent(w http.ResponseWriter, r *h
 	}
 }
 
-func (h *MetaTagContentHandler) DeleteMetaTagContent(w http.ResponseWriter, r *http.Request) {
+func (h *MetaTagContentHandler) deleteMetaTagContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 

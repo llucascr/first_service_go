@@ -21,15 +21,15 @@ func NewMetaContentHandler(srv *service.MetaContentService) *MetaContentHandler 
 	}
 }
 
-func (h *MetaContentHandler) MountMetaContentHandler(r *mux.Router) {
-	r.HandleFunc("/metacontent", h.CreateMetaContent).Methods(http.MethodPost)
-	r.HandleFunc("/metacontent/list", h.ListMetaContentFromNotebook).Methods(http.MethodGet)
-	r.HandleFunc("/metacontent", h.GetMetaContentByID).Methods(http.MethodGet)
-	r.HandleFunc("/metacontent", h.UpdateMetaContent).Methods(http.MethodPut)
-	r.HandleFunc("/metacontent", h.DeleteMetaContent).Methods(http.MethodDelete)
+func (h *MetaContentHandler) mountHandler(r *mux.Router) {
+	r.HandleFunc("/metacontent", h.createMetaContent).Methods(http.MethodPost)
+	r.HandleFunc("/metacontent/list", h.listMetaContentFromNotebook).Methods(http.MethodGet)
+	r.HandleFunc("/metacontent", h.getMetaContentByID).Methods(http.MethodGet)
+	r.HandleFunc("/metacontent", h.updateMetaContent).Methods(http.MethodPut)
+	r.HandleFunc("/metacontent", h.deleteMetaContent).Methods(http.MethodDelete)
 }
 
-func (h *MetaContentHandler) CreateMetaContent(w http.ResponseWriter, r *http.Request) {
+func (h *MetaContentHandler) createMetaContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -67,7 +67,7 @@ func (h *MetaContentHandler) CreateMetaContent(w http.ResponseWriter, r *http.Re
 	}
 }
 
-func (h *MetaContentHandler) ListMetaContentFromNotebook(w http.ResponseWriter, r *http.Request) {
+func (h *MetaContentHandler) listMetaContentFromNotebook(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -94,7 +94,7 @@ func (h *MetaContentHandler) ListMetaContentFromNotebook(w http.ResponseWriter, 
 	}
 }
 
-func (h *MetaContentHandler) GetMetaContentByID(w http.ResponseWriter, r *http.Request) {
+func (h *MetaContentHandler) getMetaContentByID(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -118,7 +118,7 @@ func (h *MetaContentHandler) GetMetaContentByID(w http.ResponseWriter, r *http.R
 	}
 }
 
-func (h *MetaContentHandler) UpdateMetaContent(w http.ResponseWriter, r *http.Request) {
+func (h *MetaContentHandler) updateMetaContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -148,7 +148,7 @@ func (h *MetaContentHandler) UpdateMetaContent(w http.ResponseWriter, r *http.Re
 	}
 }
 
-func (h *MetaContentHandler) DeleteMetaContent(w http.ResponseWriter, r *http.Request) {
+func (h *MetaContentHandler) deleteMetaContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
