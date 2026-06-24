@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	_ "embed"
+	"errors"
 
 	"github.com/llucascr/first_service_go/model"
 )
@@ -24,8 +25,9 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	}
 }
 
-func(r *UserRepository) CreateUser(ctx context.Context, user model.User) (*model.User, error) {
-	_, err := r.database.Exec(
+func (r *UserRepository) CreateUser(ctx context.Context, user model.User) (*model.User, error) {
+	_, err := r.database.ExecContext(
+		ctx,
 		createUserQuery,
 		user.UserID,
 		user.Name,
@@ -50,13 +52,15 @@ func (r *UserRepository) GetUserByName(ctx context.Context, name string) (*model
 		&user.Email,
 		&user.Password,
 		&user.CreatedAt,
-		&user.CreatedAt,
 		&user.UpdatedAt,
+		&user.DeletedAt,
 	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, model.ErrNotFound
+	}
 	if err != nil {
 		return nil, err
 	}
 
 	return &user, nil
-
 }
