@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cd /Users/lucasdecamposranzani/Developer/Estudos/first_service_go/cmd/api
-go run .
+cd "$(dirname "$0")"
+go tool air

@@ -16,6 +16,9 @@ func MountHandler(r *mux.Router, db *sql.DB) {
 	// Health
 	r.HandleFunc("/health", health).Methods(http.MethodGet)
 
+	// User
+	NewUserHandler(service.NewUserService(repository.NewUserRepository(db))).mountHandler(r)
+
 	// Notebook
 	NewNotebookHandler(service.NewNotebookService(repository.NewNotebookRepository(db))).mountHandler(r)
 
