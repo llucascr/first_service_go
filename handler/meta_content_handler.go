@@ -1,13 +1,14 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/llucascr/first_service_go/middleware"
 	"github.com/llucascr/first_service_go/model"
+	"github.com/llucascr/first_service_go/response"
 	"github.com/llucascr/first_service_go/service"
 )
 
@@ -31,13 +32,13 @@ func (h *MetaContentHandler) mountHandler(r *mux.Router) {
 
 func (h *MetaContentHandler) createMetaContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
-	userID, err := uuid.Parse(r.Header.Get("user_id"))
-	if err != nil {
-		http.Error(w, "Erro ao fazer o parse do uuid: "+err.Error(), http.StatusInternalServerError)
+	user, ok := middleware.UserFromContext(ctx)
+	if !ok {
+		response.Error(w, model.ErrInvalidCredential)
 		return
 	}
 
@@ -53,7 +54,7 @@ func (h *MetaContentHandler) createMetaContent(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	request.UserID = userID         //userID injetado do Header no DTO
+	request.UserID = user.UserID    //userID do usuário autenticado (context)
 	request.NotebookID = notebookID //notebookID injetado do Header no DTO
 	resp, err := h.service.Create(ctx, request)
 	if err != nil {
@@ -69,7 +70,7 @@ func (h *MetaContentHandler) createMetaContent(w http.ResponseWriter, r *http.Re
 
 func (h *MetaContentHandler) listMetaContentFromNotebook(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -96,7 +97,7 @@ func (h *MetaContentHandler) listMetaContentFromNotebook(w http.ResponseWriter, 
 
 func (h *MetaContentHandler) getMetaContentByID(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -120,7 +121,7 @@ func (h *MetaContentHandler) getMetaContentByID(w http.ResponseWriter, r *http.R
 
 func (h *MetaContentHandler) updateMetaContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -150,7 +151,7 @@ func (h *MetaContentHandler) updateMetaContent(w http.ResponseWriter, r *http.Re
 
 func (h *MetaContentHandler) deleteMetaContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 

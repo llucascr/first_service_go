@@ -21,9 +21,9 @@ import (
 )
 
 
-func createUser(db *sql.DB, id uuid.UUID, name, email, phone string) error {
-	query := `INSERT INTO users (user_id, name, email, phone, created_at) VALUES ($1, $2, $3, $4, $5)`
-	_, err := db.Exec(query, id, name, email, phone, time.Now())
+func createUser(db *sql.DB, id uuid.UUID, name, email, password string) error {
+	query := `INSERT INTO users (user_id, name, email, password, created_at) VALUES ($1, $2, $3, $4, $5)`
+	_, err := db.Exec(query, id, name, email, password, time.Now())
 	if err != nil {
 		return err
 	}

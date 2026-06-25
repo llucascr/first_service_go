@@ -1,13 +1,14 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/llucascr/first_service_go/middleware"
 	"github.com/llucascr/first_service_go/model"
+	"github.com/llucascr/first_service_go/response"
 	"github.com/llucascr/first_service_go/service"
 )
 
@@ -33,13 +34,13 @@ func (h *MetaTagContentHandler) mountHandler(r *mux.Router) {
 
 func (h *MetaTagContentHandler) createMetaTagContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
-	userID, err := uuid.Parse(r.Header.Get("user_id"))
-	if err != nil {
-		http.Error(w, "Erro ao fazer o parse do uuid: "+err.Error(), http.StatusInternalServerError)
+	user, ok := middleware.UserFromContext(ctx)
+	if !ok {
+		response.Error(w, model.ErrInvalidCredential)
 		return
 	}
 
@@ -62,10 +63,10 @@ func (h *MetaTagContentHandler) createMetaTagContent(w http.ResponseWriter, r *h
 	}
 
 	request := model.MetaTagContentRequestDTO{
-		UserID:     userID,     //userID injetado do Header no DTO
-		NotebookID: notebookID, //notebookID injetado do Header no DTO
-		ContentID:  contentID,  //contentID injetado do Header no DTO
-		TagID:      tagID,      //tagID injetado do Header no DTO
+		UserID:     user.UserID, //userID do usuário autenticado (context)
+		NotebookID: notebookID,  //notebookID injetado do Header no DTO
+		ContentID:  contentID,   //contentID injetado do Header no DTO
+		TagID:      tagID,       //tagID injetado do Header no DTO
 	}
 	resp, err := h.service.Create(ctx, request)
 	if err != nil {
@@ -81,7 +82,7 @@ func (h *MetaTagContentHandler) createMetaTagContent(w http.ResponseWriter, r *h
 
 func (h *MetaTagContentHandler) listMetaTagContentFromContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -108,7 +109,7 @@ func (h *MetaTagContentHandler) listMetaTagContentFromContent(w http.ResponseWri
 
 func (h *MetaTagContentHandler) listMetaTagContentFromTag(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -135,7 +136,7 @@ func (h *MetaTagContentHandler) listMetaTagContentFromTag(w http.ResponseWriter,
 
 func (h *MetaTagContentHandler) listMetaTagContentFromNotebook(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -162,7 +163,7 @@ func (h *MetaTagContentHandler) listMetaTagContentFromNotebook(w http.ResponseWr
 
 func (h *MetaTagContentHandler) getMetaTagContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -192,7 +193,7 @@ func (h *MetaTagContentHandler) getMetaTagContent(w http.ResponseWriter, r *http
 
 func (h *MetaTagContentHandler) updateMetaTagContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -231,7 +232,7 @@ func (h *MetaTagContentHandler) updateMetaTagContent(w http.ResponseWriter, r *h
 
 func (h *MetaTagContentHandler) deleteMetaTagContent(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
