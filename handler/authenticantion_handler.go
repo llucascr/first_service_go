@@ -11,22 +11,22 @@ import (
 	"github.com/llucascr/first_service_go/service"
 )
 
-type UserHandler struct {
+type AuthenticationHandler struct {
 	service *service.AuthenticationService
 }
 
-func NewUserHandler(srv *service.AuthenticationService) *UserHandler {
-	return &UserHandler{
+func NewAuthenticationHandler(srv *service.AuthenticationService) *AuthenticationHandler {
+	return &AuthenticationHandler{
 		service: srv,
 	}
 }
 
-func (h *UserHandler) mountHandler(r *mux.Router) {
+func (h *AuthenticationHandler) mountHandler(r *mux.Router) {
 	r.HandleFunc("/signup", h.SignUp).Methods(http.MethodPost)
 	r.HandleFunc("/signin", h.SignIn).Methods(http.MethodPost)
 }
 
-func (h *UserHandler) SignUp(w http.ResponseWriter, r *http.Request) {
+func (h *AuthenticationHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 
@@ -46,7 +46,7 @@ func (h *UserHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	response.JSON(w, http.StatusCreated, resp)
 }
 
-func (h *UserHandler) SignIn(w http.ResponseWriter, r *http.Request) {
+func (h *AuthenticationHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	ctx := context.TODO()
 

@@ -13,10 +13,10 @@ import (
 )
 
 type AuthenticationService struct {
-	repository *repository.UserRepository
+	repository *repository.AuthenticationRepository
 }
 
-func NewUserService(repo *repository.UserRepository) *AuthenticationService {
+func NewAuthenticationService(repo *repository.AuthenticationRepository) *AuthenticationService {
 	return &AuthenticationService{
 		repository: repo,
 	}
@@ -72,4 +72,17 @@ func (srv *AuthenticationService) SingIn(ctx context.Context, dto model.SingInRe
 		User:  *user_found,
 		Token: utils.ToBase64(user_found.Name),
 	}, nil
+}
+
+func (srv *AuthenticationService) GetUserByName(ctx context.Context, name string) (*model.User, error) {
+
+	user_found, err := srv.repository.GetUserByName(ctx, name)
+	if errors.Is(err, model.ErrNotFound) {
+		return nil, model.ErrInvalidCredential
+	}
+	if err != nil {
+		return nil, fmt.Errorf("get user by name: %w", err)
+	}
+
+	return user_found, nil
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/llucascr/first_service_go/model"
 )
 
-type UserRepository struct {
+type AuthenticationRepository struct {
 	database *sql.DB
 }
 
@@ -19,13 +19,13 @@ var getUserByNameQuery string
 //go:embed queries/user_create.sql
 var createUserQuery string
 
-func NewUserRepository(db *sql.DB) *UserRepository {
-	return &UserRepository{
+func NewAuthenticationRepository(db *sql.DB) *AuthenticationRepository {
+	return &AuthenticationRepository{
 		database: db,
 	}
 }
 
-func (r *UserRepository) CreateUser(ctx context.Context, user model.User) (*model.User, error) {
+func (r *AuthenticationRepository) CreateUser(ctx context.Context, user model.User) (*model.User, error) {
 	_, err := r.database.ExecContext(
 		ctx,
 		createUserQuery,
@@ -44,7 +44,7 @@ func (r *UserRepository) CreateUser(ctx context.Context, user model.User) (*mode
 	return &user, nil
 }
 
-func (r *UserRepository) GetUserByName(ctx context.Context, name string) (*model.User, error) {
+func (r *AuthenticationRepository) GetUserByName(ctx context.Context, name string) (*model.User, error) {
 	var user model.User
 	err := r.database.QueryRowContext(ctx, getUserByNameQuery, name).Scan(
 		&user.UserID,

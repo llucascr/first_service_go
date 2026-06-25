@@ -12,9 +12,6 @@ import (
 
 	"github.com/llucascr/first_service_go/config"
 	"github.com/llucascr/first_service_go/handler"
-	"github.com/llucascr/first_service_go/middleware"
-	"github.com/llucascr/first_service_go/repository"
-	"github.com/llucascr/first_service_go/service"
 )
 
 func main() {
@@ -32,15 +29,10 @@ func main() {
 
 	fmt.Println("Connection to PostgreSQL successfully established!")
 
-	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository)
-	fmt.Println(userService)
-
 	router := mux.NewRouter()
 	handler.MountHandler(router, db)
-	loggedRouter := middleware.LoggingMiddleware(router)
 
 	log.Println("Starting server on :8080")
-	log.Fatal(http.ListenAndServe(":8080", loggedRouter))
+	log.Fatal(http.ListenAndServe(":8080", router))
 
 }

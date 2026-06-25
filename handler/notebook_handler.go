@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/llucascr/first_service_go/middleware"
 	"github.com/llucascr/first_service_go/model"
 	"github.com/llucascr/first_service_go/service"
 )
@@ -30,16 +31,16 @@ func (h *NotebookHandler) mountHandler(r *mux.Router) {
 }
 
 func (h *NotebookHandler) createNotebook(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
+	userRaw := ctx.Value(middleware.UserContextKey)
 
-	w.Header().Set("Content-Type", "application/json")
-
-	userID, err := uuid.Parse(r.Header.Get("user_id"))
-	if err != nil {
-		http.Error(w, "Erro ao fazer o parse do uuid: "+err.Error(), http.StatusInternalServerError)
+	user, ok := userRaw.(*model.User)
+	if !ok || user == nil {
+		http.Error(w, "user not in context", http.StatusForbidden)
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json")
 
 	var request model.NotebookRequestDTO
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
@@ -47,34 +48,32 @@ func (h *NotebookHandler) createNotebook(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	request.UserID = userID //userID injetado do Header no DTO
+	request.UserID = user.UserID
+
 	resp, err := h.service.Create(ctx, request)
 	if err != nil {
 		http.Error(w, "Erro ao salvar notebook: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		http.Error(w, "Falha ao codificar resposta: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 func (h *NotebookHandler) listNotebookFromUser(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
+	userRaw := ctx.Value(middleware.UserContextKey)
 
 	w.Header().Set("Content-Type", "application/json")
 
-	userID, err := uuid.Parse(r.Header.Get("user_id"))
-	if err != nil {
-		http.Error(w, "Erro ao fazer o parse do uuid: "+err.Error(), http.StatusInternalServerError)
+	user, ok := userRaw.(*model.User)
+	if !ok || user == nil {
+		http.Error(w, "user not in context", http.StatusForbidden)
 		return
 	}
 
 	// TODO: fix: corrigir os erros, mudar o jeito que estão aparecendo e os casos que aparecem
 	request := model.ListNotebooksFromUserDTO{
-		UserID: userID,
+		UserID: user.UserID,
 	}
 	list_notebooks, err := h.service.ListNotebooksFromUser(ctx, request)
 	if err != nil {

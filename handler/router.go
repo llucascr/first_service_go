@@ -6,31 +6,35 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/llucascr/first_service_go/middleware"
 	"github.com/llucascr/first_service_go/repository"
 	"github.com/llucascr/first_service_go/service"
 )
 
-// MountHandler constroi toda a cadeia repository -> service -> handler a partir
-// do *sql.DB e delega o registro das rotas para o mountHandler de cada handler.
 func MountHandler(r *mux.Router, db *sql.DB) {
-	// Health
+	r.Use(middleware.LoggingMiddleware)
 	r.HandleFunc("/health", health).Methods(http.MethodGet)
 
-	// User
-	NewUserHandler(service.NewUserService(repository.NewUserRepository(db))).mountHandler(r)
+	auth := r.PathPrefix("/auth").Subrouter()
+	// Auth (User)
+	authService := service.NewAuthenticationService(repository.NewAuthenticationRepository(db))
+	NewAuthenticationHandler(authService).mountHandler(auth)
+
+	api := r.PathPrefix("/api").Subrouter()
+	api.Use(middleware.Identify(authService))
 
 	// Notebook
-	NewNotebookHandler(service.NewNotebookService(repository.NewNotebookRepository(db))).mountHandler(r)
+	NewNotebookHandler(service.NewNotebookService(repository.NewNotebookRepository(db))).mountHandler(api)
 
 	// Tag
-	NewTagHandler(service.NewTagService(repository.NewTagRepository(db))).mountHandler(r)
+	NewTagHandler(service.NewTagService(repository.NewTagRepository(db))).mountHandler(api)
 
 	// Meta Content
-	NewMetaContentHandler(service.NewMetaContentService(repository.NewMetaContentRepository(db))).mountHandler(r)
+	NewMetaContentHandler(service.NewMetaContentService(repository.NewMetaContentRepository(db))).mountHandler(api)
 
 	// Nodes Content
-	NewNodesContentHandler(service.NewNodesContentService(repository.NewNodesContentRepository(db))).mountHandler(r)
+	NewNodesContentHandler(service.NewNodesContentService(repository.NewNodesContentRepository(db))).mountHandler(api)
 
 	// Meta Tag Content
-	NewMetaTagContentHandler(service.NewMetaTagContentService(repository.NewMetaTagContentRepository(db))).mountHandler(r)
+	NewMetaTagContentHandler(service.NewMetaTagContentService(repository.NewMetaTagContentRepository(db))).mountHandler(api)
 }
