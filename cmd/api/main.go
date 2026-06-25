@@ -10,17 +10,14 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
-	"github.com/llucascr/first_service_go/handler"
-	"github.com/llucascr/first_service_go/middleware"
 	"github.com/llucascr/first_service_go/config"
-	"github.com/llucascr/first_service_go/repository"
-	"github.com/llucascr/first_service_go/service"
+	"github.com/llucascr/first_service_go/handler"
 )
 
 func main() {
 	log.Println("creating a webserver")
 
-	if err := godotenv.Load("../../.env"); err != nil {
+	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, using environment variables")
 	}
 
@@ -32,26 +29,10 @@ func main() {
 
 	fmt.Println("Connection to PostgreSQL successfully established!")
 
-	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository)
-	fmt.Println(userService)
-
-	notebookRepository := repository.NewNotebookRepository(db)
-	notebookService := service.NewNotebookService(notebookRepository)
-	notebookHandler := handler.NewNotebookHandler(notebookService)
-
-	tagRepository := repository.NewTagRepository(db)
-	tagService := service.NewTagService(tagRepository)
-	tagHandler := handler.NewTagHandler(tagService)
-
 	router := mux.NewRouter()
-	router.HandleFunc("/health", handler.Health).Methods("GET")
-
-	notebookHandler.MountNotebookHandler(router)
-	tagHandler.MountTagHandler(router)
-	loggedRouter := middleware.LoggingMiddleware(router)
+	handler.MountHandler(router, db)
 
 	log.Println("Starting server on :8080")
-	log.Fatal(http.ListenAndServe(":8080", loggedRouter))
+	log.Fatal(http.ListenAndServe(":8080", router))
 
 }

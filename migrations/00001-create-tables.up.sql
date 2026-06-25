@@ -2,7 +2,7 @@ CREATE TABLE users (
     user_id UUID PRIMARY KEY,
     name        VARCHAR(300) NOT NULL,
     email       VARCHAR(300) NOT NULL,
-    phone       VARCHAR(20),
+    password       VARCHAR(255) NOT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
@@ -42,7 +42,7 @@ CREATE TABLE meta_contents (
 );
 
 CREATE TABLE nodes_contents (
-    node_id      UUID,
+    node_id      UUID PRIMARY KEY,
     content_id   UUID REFERENCES meta_contents(content_id),
     user_id      UUID NOT NULL REFERENCES users(user_id),
     notebook_id  UUID NOT NULL REFERENCES notebooks(notebook_id),

@@ -11,7 +11,7 @@ type HealthResponse struct {
 	Message string `json:"message"`
 }
 
-func Health(w http.ResponseWriter, r *http.Request) {
+func health(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
