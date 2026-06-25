@@ -3,11 +3,11 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/llucascr/first_service_go/model"
 	"github.com/llucascr/first_service_go/response"
-	"github.com/llucascr/first_service_go/utils"
 )
 
 type contextKey string
@@ -27,8 +27,13 @@ func Identify(auth AuthService) mux.MiddlewareFunc {
 				response.Error(w, model.ErrInvalidCredential)
 				return
 			}
+			token = strings.TrimPrefix(token, "Bearer ")
 
-			name := utils.FromBase64(token)
+			name, err := model.ValidateToken(token)
+			if err != nil {
+				response.Error(w, model.ErrInvalidCredential)
+				return
+			}
 
 			user, err := auth.GetUserByName(r.Context(), name)
 			if err != nil {

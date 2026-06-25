@@ -37,13 +37,15 @@ func (h *AuthenticationHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: utils de enviar email
-	resp, err := h.service.SingUp(ctx, request)
+	err := h.service.SingUp(ctx, request)
 	if err != nil {
 		response.Error(w, err)
 		return
 	}
 
-	response.JSON(w, http.StatusCreated, resp)
+	response.JSON(w, http.StatusCreated, map[string]string{
+		"message": "Usuário criado com sucesso",
+	})
 }
 
 func (h *AuthenticationHandler) SignIn(w http.ResponseWriter, r *http.Request) {
@@ -56,11 +58,14 @@ func (h *AuthenticationHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := h.service.SingIn(ctx, request)
+	token, err := h.service.SingIn(ctx, request)
 	if err != nil {
 		response.Error(w, err)
 		return
 	}
 
-	response.JSON(w, http.StatusOK, resp)
+	r.Header.Add("Authorization", token)
+	response.JSON(w, http.StatusCreated, map[string]string{
+		"token": token,
+	})
 }

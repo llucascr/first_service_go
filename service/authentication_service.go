@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/llucascr/first_service_go/model"
 	"github.com/llucascr/first_service_go/repository"
-	"github.com/llucascr/first_service_go/utils"
 )
 
 type AuthenticationService struct {
@@ -22,7 +21,7 @@ func NewAuthenticationService(repo *repository.AuthenticationRepository) *Authen
 	}
 }
 
-func (srv *AuthenticationService) SingUp(ctx context.Context, dto model.SingUpRequestDTO) (*model.UserAccess, error) {
+func (srv *AuthenticationService) SingUp(ctx context.Context, dto model.SingUpRequestDTO) error {
 
 	now := time.Now()
 	new_user := &model.User{
@@ -37,41 +36,40 @@ func (srv *AuthenticationService) SingUp(ctx context.Context, dto model.SingUpRe
 
 	_, err := srv.repository.GetUserByName(ctx, new_user.Name)
 	if err == nil {
-		return nil, model.ErrUserExists
+		return model.ErrUserExists
 	}
 	if !errors.Is(err, model.ErrNotFound) {
-		return nil, fmt.Errorf("get user by name: %w", err)
+		return fmt.Errorf("get user by name: %w", err)
 	}
 
-	saved_user, err := srv.repository.CreateUser(ctx, *new_user)
+	_, err = srv.repository.CreateUser(ctx, *new_user)
 	if err != nil {
-		return nil, fmt.Errorf("create user: %w", err)
+		return fmt.Errorf("create user: %w", err)
 	}
 
-	return &model.UserAccess{
-		User:  *saved_user,
-		Token: utils.ToBase64(saved_user.Name),
-	}, nil
+	return nil
 }
 
-func (srv *AuthenticationService) SingIn(ctx context.Context, dto model.SingInRequestDTO) (*model.UserAccess, error) {
+func (srv *AuthenticationService) SingIn(ctx context.Context, dto model.SingInRequestDTO) (string, error) {
 
 	user_found, err := srv.repository.GetUserByName(ctx, dto.Name)
 	if errors.Is(err, model.ErrNotFound) {
-		return nil, model.ErrInvalidCredential
+		return "", model.ErrInvalidCredential
 	}
 	if err != nil {
-		return nil, fmt.Errorf("get user by name: %w", err)
+		return "", fmt.Errorf("get user by name: %w", err)
 	}
 
 	if user_found.Password != dto.Password {
-		return nil, model.ErrInvalidCredential
+		return "", model.ErrInvalidCredential
 	}
 
-	return &model.UserAccess{
-		User:  *user_found,
-		Token: utils.ToBase64(user_found.Name),
-	}, nil
+	token, err := user_found.GenerateToken()
+	if err != nil {
+		return "", fmt.Errorf("Error Generated Token")
+	}
+
+	return token, nil
 }
 
 func (srv *AuthenticationService) GetUserByName(ctx context.Context, name string) (*model.User, error) {
