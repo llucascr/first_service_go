@@ -14,6 +14,13 @@ type contextKey string
 
 const UserContextKey contextKey = "user"
 
+// UserFromContext recupera o usuário autenticado injetado por Identify.
+// Retorna false quando não há usuário no context (ex.: rota sem o middleware).
+func UserFromContext(ctx context.Context) (*model.User, bool) {
+	user, ok := ctx.Value(UserContextKey).(*model.User)
+	return user, ok && user != nil
+}
+
 type AuthService interface {
 	GetUserByName(ctx context.Context, name string) (*model.User, error)
 }

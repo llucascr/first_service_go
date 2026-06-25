@@ -1,13 +1,14 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/llucascr/first_service_go/middleware"
 	"github.com/llucascr/first_service_go/model"
+	"github.com/llucascr/first_service_go/response"
 	"github.com/llucascr/first_service_go/service"
 )
 
@@ -31,13 +32,13 @@ func (h *TagHandler) mountHandler(r *mux.Router) {
 
 func (h *TagHandler) createTag(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
-	userID, err := uuid.Parse(r.Header.Get("user_id"))
-	if err != nil {
-		http.Error(w, "Erro ao fazer o parse do uuid: "+err.Error(), http.StatusInternalServerError)
+	user, ok := middleware.UserFromContext(ctx)
+	if !ok {
+		response.Error(w, model.ErrInvalidCredential)
 		return
 	}
 
@@ -47,7 +48,7 @@ func (h *TagHandler) createTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	request.UserID = userID //userID injetado do Header no DTO
+	request.UserID = user.UserID //userID do usuário autenticado (context)
 	resp, err := h.service.Create(ctx, request)
 	if err != nil {
 		http.Error(w, "Erro ao salvar tag: "+err.Error(), http.StatusInternalServerError)
@@ -62,18 +63,18 @@ func (h *TagHandler) createTag(w http.ResponseWriter, r *http.Request) {
 
 func (h *TagHandler) listTagFromUser(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
-	userID, err := uuid.Parse(r.Header.Get("user_id"))
-	if err != nil {
-		http.Error(w, "Erro ao fazer o parse do uuid: "+err.Error(), http.StatusInternalServerError)
+	user, ok := middleware.UserFromContext(ctx)
+	if !ok {
+		response.Error(w, model.ErrInvalidCredential)
 		return
 	}
 
 	request := model.ListTagsFromUserDTO{
-		UserID: userID,
+		UserID: user.UserID,
 	}
 	list_tags, err := h.service.ListTagsFromUser(ctx, request)
 	if err != nil {
@@ -89,7 +90,7 @@ func (h *TagHandler) listTagFromUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *TagHandler) getTagByID(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -113,17 +114,17 @@ func (h *TagHandler) getTagByID(w http.ResponseWriter, r *http.Request) {
 
 func (h *TagHandler) updateTag(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
-	tagID, err := uuid.Parse(r.Header.Get("tag_id"))
-	if err != nil {
-		http.Error(w, "Erro ao fazer o parse do uuid: "+err.Error(), http.StatusInternalServerError)
+	user, ok := middleware.UserFromContext(ctx)
+	if !ok {
+		response.Error(w, model.ErrInvalidCredential)
 		return
 	}
 
-	userID, err := uuid.Parse(r.Header.Get("user_id"))
+	tagID, err := uuid.Parse(r.Header.Get("tag_id"))
 	if err != nil {
 		http.Error(w, "Erro ao fazer o parse do uuid: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -135,7 +136,7 @@ func (h *TagHandler) updateTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	request.UserID = userID
+	request.UserID = user.UserID
 	resp, err := h.service.Update(ctx, tagID, request)
 	if err != nil {
 		http.Error(w, "Erro ao atualizar tag: "+err.Error(), http.StatusInternalServerError)
@@ -150,7 +151,7 @@ func (h *TagHandler) updateTag(w http.ResponseWriter, r *http.Request) {
 
 func (h *TagHandler) deleteTag(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 

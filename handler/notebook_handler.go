@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/llucascr/first_service_go/middleware"
 	"github.com/llucascr/first_service_go/model"
+	"github.com/llucascr/first_service_go/response"
 	"github.com/llucascr/first_service_go/service"
 )
 
@@ -32,11 +32,10 @@ func (h *NotebookHandler) mountHandler(r *mux.Router) {
 
 func (h *NotebookHandler) createNotebook(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	userRaw := ctx.Value(middleware.UserContextKey)
 
-	user, ok := userRaw.(*model.User)
-	if !ok || user == nil {
-		http.Error(w, "user not in context", http.StatusForbidden)
+	user, ok := middleware.UserFromContext(ctx)
+	if !ok {
+		response.Error(w, model.ErrInvalidCredential)
 		return
 	}
 
@@ -61,17 +60,15 @@ func (h *NotebookHandler) createNotebook(w http.ResponseWriter, r *http.Request)
 
 func (h *NotebookHandler) listNotebookFromUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	userRaw := ctx.Value(middleware.UserContextKey)
 
 	w.Header().Set("Content-Type", "application/json")
 
-	user, ok := userRaw.(*model.User)
-	if !ok || user == nil {
-		http.Error(w, "user not in context", http.StatusForbidden)
+	user, ok := middleware.UserFromContext(ctx)
+	if !ok {
+		response.Error(w, model.ErrInvalidCredential)
 		return
 	}
 
-	// TODO: fix: corrigir os erros, mudar o jeito que estão aparecendo e os casos que aparecem
 	request := model.ListNotebooksFromUserDTO{
 		UserID: user.UserID,
 	}
@@ -89,7 +86,7 @@ func (h *NotebookHandler) listNotebookFromUser(w http.ResponseWriter, r *http.Re
 
 func (h *NotebookHandler) getNotebookByID(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -113,9 +110,15 @@ func (h *NotebookHandler) getNotebookByID(w http.ResponseWriter, r *http.Request
 
 func (h *NotebookHandler) updateNotebook(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
+
+	user, ok := middleware.UserFromContext(ctx)
+	if !ok {
+		response.Error(w, model.ErrInvalidCredential)
+		return
+	}
 
 	notebookID, err := uuid.Parse(r.Header.Get("notebook_id"))
 	if err != nil {
@@ -123,15 +126,13 @@ func (h *NotebookHandler) updateNotebook(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	user_id, err := uuid.Parse(r.Header.Get("user_id"))
-
 	var request model.NotebookRequestDTO
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		http.Error(w, "JSON inválido: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	request.UserID = user_id
+	request.UserID = user.UserID
 	resp, err := h.service.Update(ctx, notebookID, request)
 	if err != nil {
 		http.Error(w, "Erro ao atualizar notebook: "+err.Error(), http.StatusInternalServerError)
@@ -146,7 +147,7 @@ func (h *NotebookHandler) updateNotebook(w http.ResponseWriter, r *http.Request)
 
 func (h *NotebookHandler) deleteNotebook(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	w.Header().Set("Content-Type", "application/json")
 

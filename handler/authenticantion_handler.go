@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 
@@ -28,7 +27,7 @@ func (h *AuthenticationHandler) mountHandler(r *mux.Router) {
 
 func (h *AuthenticationHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	var request model.SingUpRequestDTO
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
@@ -50,7 +49,7 @@ func (h *AuthenticationHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthenticationHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	ctx := context.TODO()
+	ctx := r.Context()
 
 	var request model.SingInRequestDTO
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
